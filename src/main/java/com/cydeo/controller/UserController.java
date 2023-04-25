@@ -8,8 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-
 @Controller
 @RequestMapping("/user")
 public class UserController {
@@ -54,36 +52,37 @@ public class UserController {
     @GetMapping("/update/{username}")
     public String editUser(@PathVariable("username") String username, Model model) {
 
-       model.addAttribute("user", userService.findByUserName(username));
-       model.addAttribute("roles", roleService.listAllRoles());
+        model.addAttribute("user", userService.findByUserName(username));
+        model.addAttribute("roles", roleService.listAllRoles());
         model.addAttribute("users", userService.listAllUsers());
 
         return "/user/update";
 
-   }
+    }
 
- @PostMapping("/update")
-    public String updateUser( @ModelAttribute("user") UserDTO user, BindingResult bindingResult, Model model) {
+    @PostMapping("/update")
+    public String updateUser(@ModelAttribute("user") UserDTO user, BindingResult bindingResult, Model model) {
 
         if (bindingResult.hasErrors()) {
 
             model.addAttribute("roles", roleService.listAllRoles());
             model.addAttribute("users", userService.listAllUsers());
 
-           return "/user/update";
+            return "/user/update";
 
-      }
+        }
 
-       userService.update(user);
+        userService.update(user);
 
-       return "redirect:/user/create";
+        return "redirect:/user/create";
 
-   }
+    }
 
-   @GetMapping("/delete/{username}")
+    @GetMapping("/delete/{username}")
     public String deleteUser(@PathVariable("username") String username) {
+//        userService.deleteByUserName(username);
         userService.delete(username);
-      return "redirect:/user/create";
-   }
+        return "redirect:/user/create";
+    }
 
 }
