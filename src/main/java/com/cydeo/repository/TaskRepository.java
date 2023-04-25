@@ -20,12 +20,10 @@ public interface TaskRepository extends JpaRepository<Task,Long> {
             "WHERE p.project_code=?1 AND t.task_status='COMPLETE'",nativeQuery = true)
     int totalCompletedTasks(String projectCode);
 
+    List<Task> findAllByProject(Project project);
 
-    List<Task>findAllByProject(Project project);
+    List<Task> findAllByTaskStatusIsNotAndAssignedEmployee(Status status, User user);
 
-    List<Task>findAllByTaskStatusIsNotAndAssignedEmployee(Status status, User user);
-
-   List<Task> findAllByTaskStatusAndAssignedEmployee(Status status,User user);
-
+    List<Task> findAllByTaskStatusAndAssignedEmployee(Status status, User user);
 
 }

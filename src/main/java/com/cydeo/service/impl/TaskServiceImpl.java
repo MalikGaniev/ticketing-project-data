@@ -5,6 +5,7 @@ import com.cydeo.dto.TaskDTO;
 import com.cydeo.dto.UserDTO;
 import com.cydeo.entity.Project;
 import com.cydeo.entity.Task;
+import com.cydeo.entity.User;
 import com.cydeo.enums.Status;
 import com.cydeo.mapper.ProjectMapper;
 import com.cydeo.mapper.TaskMapper;
@@ -24,9 +25,7 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
-
     private final ProjectMapper projectMapper;
-
     private final UserService userService;
     private final UserMapper userMapper;
 
@@ -60,7 +59,7 @@ public class TaskServiceImpl implements TaskService {
         Task convertedTask  = taskMapper.convertToEntity(dto);
 
         if(task.isPresent()){
-            convertedTask.setTaskStatus(dto.getTaskStatus()==null?task.get().getTaskStatus() : dto.getTaskStatus());
+            convertedTask.setTaskStatus(dto.getTaskStatus() == null ? task.get().getTaskStatus() : dto.getTaskStatus());
             convertedTask.setAssignedDate(task.get().getAssignedDate());
             taskRepository.save(convertedTask);
         }
@@ -100,36 +99,44 @@ public class TaskServiceImpl implements TaskService {
         return taskRepository.totalCompletedTasks(projectCode);
     }
 
-
     @Override
     public void deleteByProject(ProjectDTO projectDTO) {
-        Project project=projectMapper.convertToEntity(projectDTO);
-        List<Task>tasks=taskRepository.findAllByProject(project);
-  tasks.forEach(task -> delete(task.getId()));
-
+        Project project = projectMapper.convertToEntity(projectDTO);
+        List<Task> tasks = taskRepository.findAllByProject(project);
+        tasks.forEach(task -> delete(task.getId()));
     }
 
     @Override
     public void completeByProject(ProjectDTO projectDTO) {
-        Project project=projectMapper.convertToEntity(projectDTO);
-        List<Task>tasks=taskRepository.findAllByProject(project);
-       tasks.stream().map(taskMapper::convertToDto).forEach(taskDTO -> {
-           taskDTO.setTaskStatus(Status.COMPLETE);
-           update(taskDTO);
-       });
+        Project project = projectMapper.convertToEntity(projectDTO);
+        List<Task> tasks = taskRepository.findAllByProject(project);
+        tasks.stream().map(taskMapper::convertToDto).forEach(taskDTO -> {
+            taskDTO.setTaskStatus(Status.COMPLETE);
+            update(taskDTO);
+        });
     }
 
     @Override
     public List<TaskDTO> listAllTasksByStatusIsNot(Status status) {
         UserDTO loggedInUser = userService.findByUserName("john@employee.com");
-       List<Task>tasks=taskRepository.findAllByTaskStatusIsNotAndAssignedEmployee(status,userMapper.convertToEntity(loggedInUser));
+        List<Task> tasks = taskRepository.
+                findAllByTaskStatusIsNotAndAssignedEmployee(status, userMapper.convertToEntity(loggedInUser));
         return tasks.stream().map(taskMapper::convertToDto).collect(Collectors.toList());
     }
 
     @Override
     public List<TaskDTO> listAllTasksByStatus(Status status) {
         UserDTO loggedInUser = userService.findByUserName("john@employee.com");
-        List<Task>tasks=taskRepository.findAllByTaskStatusAndAssignedEmployee(status,userMapper.convertToEntity(loggedInUser));
+        List<Task> tasks = taskRepository.
+                findAllByTaskStatusAndAssignedEmployee(status, userMapper.convertToEntity(loggedInUser));
         return tasks.stream().map(taskMapper::convertToDto).collect(Collectors.toList());
     }
+
+    @Override
+    public List<TaskDTO> listAllNonCompletedByAssignedEmployee(UserDTO assignedEmployee) {
+        List<Task> tasks = taskRepository
+                .findAllByTaskStatusIsNotAndAssignedEmployee(Status.COMPLETE, userMapper.convertToEntity(assignedEmployee));
+        return tasks.stream().map(taskMapper::convertToDto).collect(Collectors.toList());
+    }
+
 }
