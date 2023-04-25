@@ -97,13 +97,13 @@ public class ProjectController {
     @GetMapping("/manager/project-status")
     public String getProjectByManager(Model model) {
 
-       List<ProjectDTO>projects=projectService.listAllProjects();
+        List<ProjectDTO> projects = projectService.listAllProjectDetails();
 
-       model.addAttribute("projects", projects);
+        model.addAttribute("projects", projects);
 
-       return "/manager/project-status";
+        return "/manager/project-status";
 
-   }
+    }
 //
 //    @GetMapping("/manager/complete/{projectCode}")
 //    public String managerCompleteProject(@PathVariable("projectCode") String projectCode) {

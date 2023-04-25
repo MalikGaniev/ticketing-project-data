@@ -19,16 +19,17 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
-private final UserService userService;
+
     private final ProjectRepository projectRepository;
     private final ProjectMapper projectMapper;
+    private final UserService userService;
     private final UserMapper userMapper;
-
     private final TaskService taskService;
-    public ProjectServiceImpl(UserService userService, ProjectRepository projectRepository, ProjectMapper projectMapper, UserMapper userMapper, TaskService taskService) {
-        this.userService = userService;
+
+    public ProjectServiceImpl(ProjectRepository projectRepository, ProjectMapper projectMapper, UserService userService, UserMapper userMapper, TaskService taskService) {
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
+        this.userService = userService;
         this.userMapper = userMapper;
         this.taskService = taskService;
     }
@@ -89,17 +90,23 @@ private final UserService userService;
 
     @Override
     public List<ProjectDTO> listAllProjectDetails() {
-        UserDTO currentUserDto=userService.findByUserName("harold@manager.com");
-     User user =userMapper.convertToEntity(currentUserDto);
-List<Project>list=projectRepository.findAllByAssignedManager(user);
+
+        UserDTO currentUserDTO = userService.findByUserName("harold@manager.com");
+        User user = userMapper.convertToEntity(currentUserDTO);
+
+        List<Project> list = projectRepository.findAllByAssignedManager(user);
 
 
         return list.stream().map(project -> {
-            ProjectDTO obj=projectMapper.convertToDto(project);
+
+            ProjectDTO obj = projectMapper.convertToDto(project);
+
             obj.setUnfinishedTaskCounts(taskService.totalNonCompletedTask(project.getProjectCode()));
             obj.setCompleteTaskCounts(taskService.totalCompletedTask(project.getProjectCode()));
+
             return obj;
-        }
+            }
+
         ).collect(Collectors.toList());
     }
 }
