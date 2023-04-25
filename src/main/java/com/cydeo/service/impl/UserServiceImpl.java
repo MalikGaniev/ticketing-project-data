@@ -1,9 +1,5 @@
 package com.cydeo.service.impl;
 
- 
-
-
-
 import com.cydeo.dto.UserDTO;
 import com.cydeo.entity.User;
 import com.cydeo.mapper.UserMapper;
@@ -48,39 +44,39 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteByUserName(String username) {
 
-       userRepository.deleteByUserName(username);
+        userRepository.deleteByUserName(username);
     }
 
-  @Override
+    @Override
     public UserDTO update(UserDTO user) {
 
-//find user
-      User user1=userRepository.findByUserName(user.getUserName());
-     //Map update user dto to entity object
-     User convertedUser =userMapper.convertToEntity(user);
-     //set id to the converted object
-      convertedUser.setId(user1.getId());
-      //save tge uodated user in the db
-      userRepository.save(convertedUser);
+        //Find current user
+        User user1 = userRepository.findByUserName(user.getUserName());  //has id
+        //Map update user dto to entity object
+        User convertedUser = userMapper.convertToEntity(user);   // has id?
+        //set id to the converted object
+        convertedUser.setId(user1.getId());
+        //save the updated user in the db
+        userRepository.save(convertedUser);
 
-      return findByUserName(user.getUserName());
+        return findByUserName(user.getUserName());
 
     }
 
     @Override
     public void delete(String username) {
-       //go to db get that user
-       User user = userRepository.findByUserName(username);
 
-        //change is_deleted field to true
+        User user = userRepository.findByUserName(username);
         user.setIsDeleted(true);
-        //save in the db
         userRepository.save(user);
+
     }
 
     @Override
     public List<UserDTO> listAllByRole(String role) {
-        List<User>users=userRepository.findByRoleDescriptionIgnoreCase(role);
+
+        List<User> users = userRepository.findByRoleDescriptionIgnoreCase(role);
+
         return users.stream().map(userMapper::convertToDto).collect(Collectors.toList());
     }
 }

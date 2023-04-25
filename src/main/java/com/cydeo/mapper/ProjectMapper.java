@@ -9,7 +9,8 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ProjectMapper {
-    private ModelMapper modelMapper;
+
+    private final ModelMapper modelMapper;
 
     public ProjectMapper(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
@@ -21,6 +22,8 @@ public class ProjectMapper {
     }
 
     public ProjectDTO convertToDto(Project entity){
+
         return modelMapper.map(entity,ProjectDTO.class);
     }
+
 }

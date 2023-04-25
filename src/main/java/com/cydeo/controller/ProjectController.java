@@ -1,6 +1,7 @@
 package com.cydeo.controller;
 
 import com.cydeo.dto.ProjectDTO;
+import com.cydeo.dto.UserDTO;
 import com.cydeo.service.ProjectService;
 import com.cydeo.service.UserService;
 import org.springframework.stereotype.Controller;
@@ -9,17 +10,18 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 @RequestMapping("/project")
 public class ProjectController {
 
-   private final UserService userService;
+    private final UserService userService;
     private final ProjectService projectService;
 
     public ProjectController(UserService userService, ProjectService projectService) {
         this.userService = userService;
-       this.projectService = projectService;
+        this.projectService = projectService;
     }
 
     @GetMapping("/create")
@@ -33,35 +35,35 @@ public class ProjectController {
 
     }
 
-   @PostMapping("/create")
-    public String insertProject(@Valid @ModelAttribute("project") ProjectDTO project, BindingResult bindingResult, Model model) {
+    @PostMapping("/create")
+    public String insertProject(@ModelAttribute("project") ProjectDTO project, BindingResult bindingResult, Model model) {
 
-       if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
 
             model.addAttribute("managers", userService.listAllByRole("manager"));
-          model.addAttribute("projects", projectService.listAllProjects());
+            model.addAttribute("projects", projectService.listAllProjects());
 
-         return "/project/create";
+            return "/project/create";
 
-      }
+        }
 
-       projectService.save(project);
+        projectService.save(project);
 
         return "redirect:/project/create";
 
-  }
+    }
 
     @GetMapping("/delete/{projectCode}")
     public String deleteProject(@PathVariable("projectCode") String projectCode) {
-       projectService.delete(projectCode);
-       return "redirect:/project/create";
+        projectService.delete(projectCode);
+        return "redirect:/project/create";
     }
 
-  @GetMapping("/complete/{projectCode}")
+    @GetMapping("/complete/{projectCode}")
     public String completeProject(@PathVariable("projectCode") String projectCode) {
-       projectService.Complete(projectCode);
-       return "redirect:/project/create";
-   }
+        projectService.complete(projectCode);
+        return "redirect:/project/create";
+    }
 
     @GetMapping("/update/{projectCode}")
     public String editProject(@PathVariable("projectCode") String projectCode, Model model){
@@ -70,39 +72,38 @@ public class ProjectController {
         model.addAttribute("managers", userService.listAllByRole("manager"));
         model.addAttribute("projects", projectService.listAllProjects());
 
-       return "/project/update";
+        return "/project/update";
 
     }
 
-   @PostMapping("/update")
-   public String updateProject(@Valid @ModelAttribute("project") ProjectDTO project, BindingResult bindingResult, Model model) {
+    @PostMapping("/update")
+    public String updateProject(@Valid @ModelAttribute("project") ProjectDTO project, BindingResult bindingResult, Model model) {
 
-       if (bindingResult.hasErrors()) {
+        if (bindingResult.hasErrors()) {
 
-           model.addAttribute("managers", userService.listAllByRole("manager"));
-           model.addAttribute("projects", projectService.listAllProjects());
+            model.addAttribute("managers", userService.listAllByRole("manager"));
+            model.addAttribute("projects", projectService.listAllProjects());
 
-           return "/project/update";
+            return "/project/update";
 
-       }
+        }
 
         projectService.update(project);
 
-       return "redirect:/project/create";
-//
-//    }
-//
-//    @GetMapping("/manager/project-status")
-//    public String getProjectByManager(Model model) {
-//
-//        UserDTO manager = userService.findById("john@cydeo.com");
-//        List<ProjectDTO> projects = projectService.getCountedListOfProjectDTO(manager);
-//
-//        model.addAttribute("projects", projects);
-//
-//        return "/manager/project-status";
-//
-//    }
+        return "redirect:/project/create";
+
+    }
+
+    @GetMapping("/manager/project-status")
+    public String getProjectByManager(Model model) {
+
+       List<ProjectDTO>projects=projectService.listAllProjects();
+
+       model.addAttribute("projects", projects);
+
+       return "/manager/project-status";
+
+   }
 //
 //    @GetMapping("/manager/complete/{projectCode}")
 //    public String managerCompleteProject(@PathVariable("projectCode") String projectCode) {
@@ -110,4 +111,4 @@ public class ProjectController {
 //        return "redirect:/project/manager/project-status";
 //    }
 
-   }}
+}

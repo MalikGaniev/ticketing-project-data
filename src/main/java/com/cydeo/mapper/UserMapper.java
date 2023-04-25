@@ -4,13 +4,13 @@ import com.cydeo.dto.RoleDTO;
 import com.cydeo.dto.UserDTO;
 import com.cydeo.entity.Role;
 import com.cydeo.entity.User;
-import org.apache.catalina.mapper.Mapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
 public class UserMapper {
-    private ModelMapper modelMapper;
+
+    private final ModelMapper modelMapper;
 
     public UserMapper(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
@@ -24,7 +24,5 @@ public class UserMapper {
     public UserDTO convertToDto(User entity){
         return modelMapper.map(entity,UserDTO.class);
     }
+
 }
-
-
-
